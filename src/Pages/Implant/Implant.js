@@ -7,7 +7,26 @@ import './Implant.css';
 class Implant extends React.Component {
   constructor(props){
     super(props);
+    this.state = {
+      data : null
+    }
   }
+  // componentDidMount(){
+  //   const url='http://http://10.2.10.10/management-pci/user?id=2438';
+  //   fetch(url, {
+  //     method: "GET",
+  //     mode: "cors",
+  //     headers: {
+  //       // "Content-Type": "application/json; charset=utf-8",
+  //       'Accept': 'application/json'
+  //     }
+  //
+  //   }).then(response => response.json())
+  //       .then(result => {this.setState({data:result})})
+  //       .catch(function (e) {
+  //     console.log(e);
+  //   });
+  // }
   render() {
     {document.title = "调查知情说明"}
     return (
@@ -21,7 +40,7 @@ class Implant extends React.Component {
             <p>上海交通大学医学院附属瑞金医院 心脏科</p>
             <p>上海交通大学医学院 公共卫生学院</p>
           </div>
-          <ul style={{width:'100%',marginTop:'2.5rem',textAlign:'center'}}>
+          <ul style={{width:'100%',bottom:'0.52rem',textAlign:'center',position:'absolute'}}>
             <li className="white_btn" style={{width:'40%',height:'6.6%',display:'inline-block'}}>
               <Link to='/un_implants' className="blueColor">拒绝</Link>
             </li>

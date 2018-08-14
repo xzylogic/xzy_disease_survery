@@ -32,6 +32,7 @@ class Query extends React.Component {
     }
     this.inputHandler = this.inputHandler.bind(this);
   }
+  //存储数据
   inputHandler = (e) => {
     let inputValue = e.target.value;
     localStorage.setItem('inputValue' + [this.props.id], inputValue);
@@ -45,6 +46,44 @@ class Query extends React.Component {
       }
       localStorage.setItem('inputValue' + [this.props.id], check_val);
     }
+    //获取分数name
+    let inputVal = document.getElementsByTagName("input");
+    if(this.props.id>=10 && this.props.id<=54){
+      for(let i=0;i<inputVal.length;i++){
+        if(inputVal[i].checked){
+          let score = parseInt(inputVal[i].name);
+          score += score;
+          alert(score)
+          localStorage.setItem('score', score);
+        }
+      }
+    }
+  }
+  //发送数据
+  sendHandler = () => {
+    // alert(localStorage.getItem('score'))
+
+    let obj={};
+    for (let i = 0; i < localStorage.length; i++) {
+      let getKey = localStorage.key(i);
+      let getVal = localStorage.getItem(getKey);
+      obj[getKey]=getVal;
+      console.log(obj);
+    }
+    const url='http://10.2.10.10/pci-micro/api/ruijin/save';
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: obj
+    })
+    .then(response => response.json())
+    .then(json =>{
+      console.log(json)
+    }).catch(function (e) {
+      console.log(e);
+    });
   }
   componentDidUpdate(){
     //获取数据
@@ -52,10 +91,25 @@ class Query extends React.Component {
     let inputVal = document.getElementsByTagName("input");
     for(let i=0;i<inputVal.length;i++){
       inputVal[i].checked=false;
+      //判断复选和单选之前是否已选
+      // console.log(inputVal[i].value +"==="+ getValue)
       if(inputVal[i].value === getValue){
         inputVal[i].checked=true;
+      }else if(this.props.id === 7 && getValue){
+        let length=getValue.split(",").length;
+        for(let m=0;m<length;m++){
+          let val=getValue.split(",")[m];
+            if(inputVal[i].value === val){
+              inputVal[i].checked = true;
+            }
+        }
+      }else if(this.props.id === 0 || this.props.id === 2 || this.props.id === 3 ||
+          this.props.id === 4 || this.props.id === 7 || this.props.id === 8 ||
+          this.props.id === 9 || this.props.id === 55  ){
+        inputVal[i].value = getValue;
       }
     }
+
   }
   render() {
     let id = this.props.id;//获取当前url参数
@@ -120,19 +174,19 @@ class Query extends React.Component {
     }else if(id === 4){
       query_content = (
           <div>
-            <input type="text" onChange={this.inputHandler} defaultValue=""/><span className="basic">厘米</span>
+            <input type="text" onChange={this.inputHandler}/><span className="basic">厘米</span>
           </div>
       )
     }else if(id === 5){
       query_content = (
           <div>
-            <input type="text" onChange={this.inputHandler} defaultValue=""/><span className="basic">体重</span>
+            <input type="text" onChange={this.inputHandler}/><span className="basic">体重</span>
           </div>
       )
     }else if(id === 56){
       query_content = (
           <div>
-            <input type="text" onChange={this.inputHandler} defaultValue=""/><span className="basic">分</span>
+            <input type="text" onChange={this.inputHandler}/><span className="basic">分</span>
           </div>
       )
     }else if(id === 8){
@@ -161,7 +215,7 @@ class Query extends React.Component {
             <div className="query_end">
               <img src="" alt="调查完成"/>
               <p>调查已完成，感谢你的参与。</p>
-              <Link to={`/querys/${id}`} className="blue_btn whiteColor">确定</Link>
+              <Link to={`/querys/${id}`} className="blue_btn whiteColor" onClick={this.sendHandler.bind(this)}>确定</Link>
             </div>
           </div>
 
@@ -191,7 +245,7 @@ class Query extends React.Component {
                 return (
                     <div key={index} className="select" onClick={this.inputHandler}>
                       <Link to={`/querys/${id}`}>
-                        <input type="radio" id={'selectRadio'+index} value={option.degree}/>
+                        <input type="radio" id={'selectRadio'+index} value={option.degree} name={option.score}/>
                         <label htmlFor={'selectRadio'+index}>{option.degree}</label>
                       </Link>
                     </div>
