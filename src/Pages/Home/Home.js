@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { updateCurrentPage } from '../../Store/actions/global.action';
+// import { updateCurrentPage } from '../../Store/actions/global.action';
 
 class Home extends React.Component {
-  constructor(props){
-    super(props);
+  // constructor(props){
+  //   super(props);
+  // }
+  componentDidMount(){
+    document.title = "问卷调查";
   }
   render() {
-    {document.title = "问卷调查"}
     const app_text = {
       width:'5.86rem',
       height:'1rem',

@@ -11,24 +11,10 @@ class Implant extends React.Component {
       data : null
     }
   }
-  // componentDidMount(){
-  //   const url='http://http://10.2.10.10/management-pci/user?id=2438';
-  //   fetch(url, {
-  //     method: "GET",
-  //     mode: "cors",
-  //     headers: {
-  //       // "Content-Type": "application/json; charset=utf-8",
-  //       'Accept': 'application/json'
-  //     }
-  //
-  //   }).then(response => response.json())
-  //       .then(result => {this.setState({data:result})})
-  //       .catch(function (e) {
-  //     console.log(e);
-  //   });
-  // }
+  componentDidMount(){
+    document.title = "调查知情说明";
+  }
   render() {
-    {document.title = "调查知情说明"}
     return (
         <div>
           <p className="explain">此次调查主要目的是了解冠心病支架术后人群的生活质量特征，探讨处于术后不同病程阶段的生活质量变化趋势。在调查过程中，我们将严格遵守保护个人的私密信息，任何文章或调查研究结果中，不会出现姓名、住院号等个人信息，也严禁任何人公开或是用于商业行为。

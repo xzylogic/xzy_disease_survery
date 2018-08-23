@@ -15,7 +15,7 @@ class Querys extends React.Component {
         .catch(e => {console.log(e)});
   }
   render() {
-    let id=parseInt(this.props.match.params.id);
+    let id=Number(this.props.match.params.id);
     let percent = Math.round(parseFloat(id / 56 * 100));
     if(percent>=100){
       percent = 100

@@ -20,9 +20,9 @@ input{
     height: 1rem;
     line-height: 1rem;
 }
-.female:visited, .female:active, .male:visited, .male:active{
-    background-color: #F9F9F9;
-}
+/*.female:visited, .female:active, .male:visited, .male:active{*/
+    /*background-color: #F9F9F9;*/
+/*}*/
 input[type="radio"] + label::before,
 input[type="checkbox"] + label::before{
     content: "\a0"; /*不换行空格*/
@@ -42,11 +42,14 @@ input[type="checkbox"] + label::before{
 input[type="checkbox"] + label::before{
     border-radius: 0;
 }
-input[type="radio"]:checked + label::before,
+/*input[type="radio"]:checked + label::before,*/
 input[type="checkbox"]:checked + label::before {
     background-color: #0CB8F5;
     /*background-clip: content-box;*/
     /*padding: .2em;*/
+}
+.label::before {
+    background-color: #0CB8F5;
 }
 input[type="radio"],
 input[type="checkbox"]{
@@ -83,4 +86,10 @@ label{
     color: #666666;
     line-height: 0.5rem;
     /*line-height: 1.6rem;*/
+}
+.am-list-item .am-list-line .am-list-extra{
+    text-align: left;
+}
+.am-list-item .am-list-line .am-list-arrow{
+    display: none;
 }

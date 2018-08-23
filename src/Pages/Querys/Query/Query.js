@@ -4,79 +4,102 @@ import { Progress } from 'antd-mobile';
 import { Link } from 'react-router-dom';
 import { DatePicker, List } from 'antd-mobile';
 
-const nowTimeStamp = Date.now();
-const now = new Date(nowTimeStamp);
-// GMT is not currently observed in the UK. So use UTC now.
-const utcNow = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-
-// Make sure that in `time` mode, the maxDate and minDate are within one day.
-let minDate = new Date(nowTimeStamp - 1e7);
-const maxDate = new Date(nowTimeStamp + 1e7);
-// console.log(minDate, maxDate);
-if (minDate.getDate() !== maxDate.getDate()) {
-  // set the minDate to the 0 of maxDate
-  minDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
-}
 class Query extends React.Component {
   constructor(props){
     super(props);
     this.state = {
       inputValue: [],
       checked: false,
-      date: now,
-      time: now,
-      utcDate: utcNow,
-      dpValue: null,
-      customChildValue: null,
-      visible: false,
+      date: null,
+      operateTime: null,
     }
     this.inputHandler = this.inputHandler.bind(this);
+  }
+  componentDidMount(){
+    this.dataHandler();
   }
   //存储数据
   inputHandler = (e) => {
     let inputValue = e.target.value;
-    localStorage.setItem('inputValue' + [this.props.id], inputValue);
     if(this.props.id === 7){
       let inputCheckbox = document.getElementsByTagName("input");
       let check_val = [];
       for(let k in inputCheckbox){
         if(inputCheckbox[k].checked) {
-          check_val.push(inputCheckbox[k].value);
+          check_val.push(inputCheckbox[k].name);
         }
       }
       localStorage.setItem('inputValue' + [this.props.id], check_val);
+    }else{
+      localStorage.setItem('inputValue' + [this.props.id], inputValue);
     }
-    //获取分数name
+    //存储分数name
     let inputVal = document.getElementsByTagName("input");
     if(this.props.id>=10 && this.props.id<=54){
       for(let i=0;i<inputVal.length;i++){
         if(inputVal[i].checked){
-          let score = parseInt(inputVal[i].name);
-          score += score;
-          alert(score)
-          localStorage.setItem('score', score);
+          let score = Number(inputVal[i].name);
+          localStorage.setItem((this.props.id-9), score);
         }
       }
+    }
+    if(this.props.id === 55){
+      localStorage.setItem('46',localStorage.getItem('inputValue55'));
     }
   }
   //发送数据
   sendHandler = () => {
-    // alert(localStorage.getItem('score'))
+    let questionData = this.props.query;
+    let saq = [],sf_12 = [],phq_9 = [],eq_5d = [];
+      for (let i = 0; i < questionData.length; i++) {
+        let Datatype = questionData[i].category;
+        let id = String(questionData[i].id) || null;
+        let getVal = localStorage.getItem(id);
+        if(Datatype === "SAQ"){
+          saq.push({'id':id,'score':Number(getVal)})
+            // saq[id]=getVal;
+        }
+        if(Datatype === "SF-12"){
+          sf_12.push({'id':id,'score':Number(getVal)})
+        }
+        if(Datatype === "PHQ-9"){
+          phq_9.push({'id':id,'score':Number(getVal)})
+        }
+        if(Datatype === "EQ-5D"){
+            eq_5d.push({'id':id,'score':Number(getVal)})
+        }
+      }
+    let deg = localStorage.getItem('inputValue7').split(',');
+    let obj = {
+      name:localStorage.getItem('inputValue0'),
+      sex :localStorage.getItem('inputValue1'),
+      birthday:localStorage.getItem('inputValue2'),
+      height:localStorage.getItem('inputValue3'),
+      weight :localStorage.getItem('inputValue4'),
+      education:localStorage.getItem('inputValue5'),
+      marriage:localStorage.getItem('inputValue6'),
+      degree:deg,
+      date:localStorage.getItem('inputValue8'),
+      hospital:localStorage.getItem('inputValue9'),
 
-    let obj={};
-    for (let i = 0; i < localStorage.length; i++) {
-      let getKey = localStorage.key(i);
-      let getVal = localStorage.getItem(getKey);
-      obj[getKey]=getVal;
-      console.log(obj);
-    }
+      eq :eq_5d,
+      phq :phq_9,
+      saq :saq,
+      sf :sf_12,
+
+      // openId :'111',
+      userId :'2438',
+    };
+    console.log(obj);
+
     const url='http://10.2.10.10/pci-micro/api/ruijin/save';
     fetch(url, {
       method: 'POST',
+      mode: "cors",
       headers: {
         'Content-Type': 'application/json'
       },
-      body: obj
+      body: JSON.stringify(obj)
     })
     .then(response => response.json())
     .then(json =>{
@@ -84,24 +107,36 @@ class Query extends React.Component {
     }).catch(function (e) {
       console.log(e);
     });
-  }
-  componentDidUpdate(){
-    //获取数据
+  };
+  //获取数据
+  dataHandler = () => {
+    let dateExtra = document.getElementsByClassName("am-list-extra")[0];
     let getValue = localStorage.getItem('inputValue'+[this.props.id]);
+    if(this.props.id === 2 && localStorage.getItem('inputValue2') && dateExtra){
+      dateExtra.innerHTML = localStorage.getItem('inputValue2');
+    }
+    if(this.props.id === 8 && localStorage.getItem('inputValue8') && dateExtra){
+      dateExtra.innerHTML = localStorage.getItem('inputValue8');
+    }
     let inputVal = document.getElementsByTagName("input");
+    let labelBF = document.getElementsByTagName("label");
     for(let i=0;i<inputVal.length;i++){
       inputVal[i].checked=false;
+      if(labelBF.length>1){
+        labelBF[i].className = null;
+      }
       //判断复选和单选之前是否已选
       // console.log(inputVal[i].value +"==="+ getValue)
       if(inputVal[i].value === getValue){
-        inputVal[i].checked=true;
+        inputVal[i].checked = true;
+        labelBF[i].className = 'label';
       }else if(this.props.id === 7 && getValue){
         let length=getValue.split(",").length;
         for(let m=0;m<length;m++){
           let val=getValue.split(",")[m];
-            if(inputVal[i].value === val){
-              inputVal[i].checked = true;
-            }
+          if(inputVal[i].value === val){
+            inputVal[i].checked = true;
+          }
         }
       }else if(this.props.id === 0 || this.props.id === 2 || this.props.id === 3 ||
           this.props.id === 4 || this.props.id === 7 || this.props.id === 8 ||
@@ -109,7 +144,15 @@ class Query extends React.Component {
         inputVal[i].value = getValue;
       }
     }
-
+  };
+  componentDidUpdate(){
+    if(this.props.id===2 && this.state.date){
+      localStorage.setItem('inputValue2',this.state.date.toISOString().slice(0,10));
+    }
+    if(this.props.id===8 && this.state.operateTime){
+      localStorage.setItem('inputValue8',this.state.operateTime.toISOString().slice(0,10));
+    }
+    this.dataHandler();
   }
   render() {
     let id = this.props.id;//获取当前url参数
@@ -134,7 +177,7 @@ class Query extends React.Component {
       query_title = <p className="title_header">{this.props.query[id-1].title}</p>;
     }
 
-    if(id === 1 || id ===9 || id ===10){
+    if(id === 1 || id ===10){
       query_content = <input type="text" className="inputText" onChange={this.inputHandler}/>
     }else if(id === 2){
       query_content = (
@@ -159,14 +202,30 @@ class Query extends React.Component {
             <List className="date-picker-list" style={{ backgroundColor: 'white' }}>
               <DatePicker
                   mode="date"
-                  title=""
-                  extra="Optional"
+                  title=" "
+                  extra=" "
                   value={this.state.date}
                   // onChange={async(date) => {console.log(date);await this.setState({date: date});await console.log(this.state.date)}}
                   onChange={date => this.setState({ date })}
               >
-                {/*<List.Item arrow="horizontal">出生日期</List.Item>*/}
-                <input type="text" className="inputText" arrow="horizontal" value={this.state.date.toISOString().slice(0,10)} onChange={this.inputHandler} />
+                <List.Item arrow="horizontal"></List.Item>
+              </DatePicker>
+            </List>
+          </div>
+      )
+    }else if(id === 9){
+      query_content = (
+          <div>
+            <List className="date-picker-list" style={{ backgroundColor: 'white' }}>
+              <DatePicker
+                  mode="date"
+                  title=" "
+                  extra=" "
+                  value={this.state.operateTime}
+                  // onChange={async(date) => {console.log(date);await this.setState({date: date});await console.log(this.state.date)}}
+                  onChange={operateTime => this.setState({ operateTime })}
+              >
+                <List.Item arrow="horizontal"></List.Item>
               </DatePicker>
             </List>
           </div>
@@ -180,7 +239,7 @@ class Query extends React.Component {
     }else if(id === 5){
       query_content = (
           <div>
-            <input type="text" onChange={this.inputHandler}/><span className="basic">体重</span>
+            <input type="text" onChange={this.inputHandler}/><span className="basic">kg</span>
           </div>
       )
     }else if(id === 56){
@@ -199,7 +258,7 @@ class Query extends React.Component {
                 }else{
                   return (
                       <div key={index} onClick={this.inputHandler} className="select">
-                          <input type="checkbox" id={'selectCheckBox'+index} value={option.degree}/>
+                          <input type="checkbox" id={'selectCheckBox'+index} value={option.degree} name={option.degree}/>
                           <label htmlFor={'selectCheckBox'+index}>{option.degree}</label>
                       </div>
                   )
